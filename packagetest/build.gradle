@@ -1,0 +1,126 @@
+apply plugin: 'com.android.application'
+
+//时间
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+
+android {
+    //打包信息
+    signingConfigs {
+        //建议不要把帐号密码写到release中，毕竟都是机密，任何人都能看是不好的，此处不是重点，所以掠过
+        release {
+            keyAlias '123456'
+            keyPassword '123456'
+            storeFile file('D:/appTools/keystore.jks')
+            storePassword '123456'
+        }
+    }
+
+    compileSdkVersion 26
+    buildToolsVersion "25.0.3"
+
+    productFlavors {
+        yunweikang {
+            // 每个环境包名不同
+            applicationId "com.bill.first.yunweikang"
+            // 动态添加 string.xml 字段；
+            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+            resValue "string", "app_name", "云卫康"
+//            // 动态修改 常量 字段
+            buildConfigField "String", "ENVIRONMENT", '"我的名字叫云卫康"'
+            // 修改 AndroidManifest.xml 里渠道变量
+            manifestPlaceholders = [CHANNEL_VALUE: "yunweikang",
+                                    JPUSH_CHANNEL: "yunweikang",
+                                    app_icon     : "@mipmap/ic_yunweikang",
+                                    appkey       : "4e3a7bbd9f3da0f9064e6580"]
+        }
+        liulvguangyin {
+            applicationId "com.bill.second.liulvguangyin"
+            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+            resValue "string", "app_name", "六律光音"
+
+            buildConfigField "String", "ENVIRONMENT", '"我的名字叫六律光音"'
+            manifestPlaceholders = [CHANNEL_VALUE: "liulvguangyin",
+                                    JPUSH_CHANNEL: "liulvguangyin",
+                                    app_icon     : "@mipmap/ic_liulvguangyin",
+                                    appkey       : "91022ae3a6df48ea523c70f8"]
+        }
+        jinmaike {
+            applicationId "com.bill.third.jinmaike"
+            // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+            resValue "string", "app_name", "金麦客"
+
+            buildConfigField "String", "ENVIRONMENT", '"我的名字叫金麦客"'
+
+            manifestPlaceholders = [CHANNEL_VALUE: "jinmaike",
+                                    JPUSH_CHANNEL: "jinmaike"
+                                    , app_icon   : "@mipmap/ic_jinmaike",
+                                    appkey       : "1c0c49844d4d2900cb7fd30b"]
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def outputFile = output.outputFile
+            if (variant.buildType.name.equals('release')) {
+                //生成apk名字的格式：Channel1.0.0_2016-06-22_baidu.apk
+                //可自定义自己想要生成的格式
+                def fileName = "Channel${defaultConfig.versionName}_${releaseTime()}_${variant.productFlavors[0].name}.apk"
+                output.outputFile = new File(outputFile.parent, fileName)
+            }
+        }
+    }
+
+
+    defaultConfig {
+        //一般这个地方都会自动生成有一个applicationId，但是此时如果要做成多渠道多包名的工程，还是要干掉下面一句话
+//        applicationId "com.bill.pack"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            //选择要添加的对应cpu类型的.so库。
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
+            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+        }
+
+        manifestPlaceholders = [
+                JPUSH_PKGNAME: "com.bill.pack"
+//                JPUSH_APPKEY : "${appkey}", //JPush上注册的包名对应的appkey.
+        ]
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+        //发布版本，有混淆
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:26.+'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
+
+    compile 'cn.jiguang.sdk:jpush:3.0.9'
+    // 此处以JPush 3.0.9 版本为例。
+    compile 'cn.jiguang.sdk:jcore:1.1.7'
+    // 此处以JCore 1.1.7 版本为例。
+}

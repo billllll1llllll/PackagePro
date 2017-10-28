@@ -1,0 +1,4 @@
+<resources>
+    <!--既然gradle中已经命名了app_name字段了，那么这个地方就要干掉这个字段，否则编译的时候会引起冲突-->
+    <!--<string name="app_name">PackageTest</string>-->
+</resources>

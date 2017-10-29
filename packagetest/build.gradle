@@ -46,16 +46,16 @@ android {
                                     app_icon     : "@mipmap/ic_liulvguangyin",
                                     appkey       : "91022ae3a6df48ea523c70f8"]
         }
-        jinmaike {
+        wanda {
             applicationId "com.bill.third.jinmaike"
             // 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
-            resValue "string", "app_name", "金麦客"
+            resValue "string", "app_name", "万达"
 
-            buildConfigField "String", "ENVIRONMENT", '"我的名字叫金麦客"'
+            buildConfigField "String", "ENVIRONMENT", '"我的名字叫万达"'
 
-            manifestPlaceholders = [CHANNEL_VALUE: "jinmaike",
-                                    JPUSH_CHANNEL: "jinmaike"
-                                    , app_icon   : "@mipmap/ic_jinmaike",
+            manifestPlaceholders = [CHANNEL_VALUE: "wanda",
+                                    JPUSH_CHANNEL: "wanda"
+                                    , app_icon   : "@mipmap/wanda",
                                     appkey       : "1c0c49844d4d2900cb7fd30b"]
         }
     }
